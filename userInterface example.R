@@ -49,13 +49,3 @@ test <- FLIPPER.func(input=as.data.frame(summ$input),species=summ$species,#E.cte
 
 x11(height=20, width=20)
 plot.FLIPPER(test)
-
-test$profile.method$int.R
-test$profile.method$fluxes$dif.flux
-test$profile.method$flux.down
-
-test$profile.method$prod
-
-plot(y=test$profile.method$fluxes$x,x=test$profile.method$fluxes$dif.flux,ylim=c(0.1,0))
-lines(y=test$profile.method$prod$depth,x=test$profile.method$prod$Prod)
-
