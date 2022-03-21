@@ -3,9 +3,14 @@
 # possible to include: ionic drift, advection, irrigation
 
 # Based on script by Lieke Mulder and Karline Soetaert  
-# Author: Sebastiaan van de Velde (sevdevel@vub.ac.be)
+# Author: Sebastiaan van de Velde (sebastiaan.van.de.velde@ulb.be)
 # Affiliation: VUB, Pleinlaan 2, 1050, Brussel 
 ###############################################################################
+
+# Code changes log
+# 21/03/2022 SVDV: Added 'if' condition at L355, if none of the extra zones improves the fit,
+#                  the script would crash because no zone would be selected (leading to -inf or
+#                  NA values). Now the number of guessed zones becomes automatically 1.
 
 require(tcltk)
 require(ReacTran)
@@ -343,15 +348,22 @@ fit.profile <- function(input,
       }
     }
     
-    
-    
     #===========================================================================================
     # Step 3: Guess best number of zones to start lumping; 
     # Highest amount of zones that is a significant better fit compared to zone x - 1
     #===========================================================================================  
     
-    # Get diagonal out of p-value table; get the highest amount that is better than x-1
-    GUESS.zone <- max(seq(2:i.end)[diag(Zone.table[,2:i.end]) < parms$prob]) + 1
+    # Check whether any zone distribution is better than zone x-1:
+    if (any(seq(2:i.end)[diag(Zone.table[,2:i.end]) < parms$prob])){
+      # if yes:
+      # Get diagonal out of p-value table; get the highest amount that is better than x-1
+      GUESS.zone <- max(seq(2:i.end)[diag(Zone.table[,2:i.end]) < parms$prob]) + 1
+    } else {
+      # if no:
+      # You only need 1 zone
+      GUESS.zone <- 1
+    }
+
   }else{
     GUESS.zone <- initial.zones
     Zone.table <- NULL}

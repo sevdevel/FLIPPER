@@ -1,12 +1,21 @@
 ################################################################################
 # Package name: fitProfile
 #
-# Author: Filip meysman (filip.meysmna@nioz.nl)
+# Author: Filip meysman (filip.meysmna@uantwerpen.be)
+#         Sebastiaan van de Velde (sebastiaan.van.de.velde@ulb.be)
 #
 # Package dedicated to geochemical flux and rate analysis, i.e, the robust
 # numerical extraction of fluxes and rates
 # from concentration depth profiles in aquatic sediments. 
 ################################################################################
+
+# Code changes log
+# 21/03/2022 SVDV: Removed bug where interactive breakpoint selection would only
+#                  return value relative to the lowest x-value (so the leftmost 
+#                  point on the plot was always 1, even though it was another 
+#                  value)
+#                  Added input check at L309 to make sure minimal window size is
+#                  not too small relative to the polynomial order (min.n >= p-p%%2)
 
 require(signal)
 require(fractaldim)
@@ -220,7 +229,7 @@ SavGolay.analysis <- function(profile,
   bnd.lower = 1,
   n.uniform = FALSE,
   optimal.window.size = c("interactive","automated"), 
-  min.n = p - p%%2,
+  min.n = (p - p%%2),
   max.n = nrow(profile)%/%2-1,
   keep.graphics = FALSE,
   full.output)
@@ -291,6 +300,12 @@ SavGolay.analysis <- function(profile,
   
   h <- unique(signif(diff(profile$x),digits=2))
   if (length(h)>1) stop("data points are not at equidistant depth intervals")
+
+  #=============================================================================
+  # check filter length versus polynomial order
+  #=============================================================================
+  
+  if (min.n<(p-p%%2)) stop(paste("minimal filter length n =", min.n, "and should be at least",(p-p%%2),sep=" "))
   
   #=============================================================================
   # Determine the optimal filter windows when they're not specified 
@@ -322,7 +337,8 @@ SavGolay.analysis <- function(profile,
       x11()
       # Interactive selection
       n.C <- click.break.point(x=start:end, y=C.fdts[start:end],message="C plot: Indicate break point")
-
+      # interactive plot identifies point on x-axis relative to lowest point (so 1 = start)
+      n.C <- n.C + (start-1)
     } else {
       
       x11()
@@ -366,7 +382,8 @@ SavGolay.analysis <- function(profile,
       x11()
       # Interactive selection
       n.J <- click.break.point(x=start:end, y=J.fdts[start:end],message="J plot: Indicate break point")
-      
+      # interactive plot identifies point on x-axis relative to lowest point (so 1 = start)
+      n.J <- n.J + (start-1)
     } else {
       
       x11()
@@ -408,8 +425,9 @@ SavGolay.analysis <- function(profile,
     {
       x11()
       # Interactive selection
-    n.R <- click.break.point(x=start:end, y=R.fdts[start:end],message="R plot: Indicate break point")
-      
+      n.R <- click.break.point(x=start:end, y=R.fdts[start:end],message="R plot: Indicate break point")
+      # interactive plot identifies point on x-axis relative to lowest point (so 1 = start)
+      n.R <- n.R + (start-1)
     } else {
       
       # Automated selection
