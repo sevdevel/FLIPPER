@@ -43,7 +43,8 @@
 %----------------------------------------------------------------------------------------
 
 \HRule \\[0.4cm]
-{ \huge \bfseries FLIPPER: FLexible Interpretation of Porewater Profiles and Interpretation of Rates }\\[0.4cm] % Title of your document
+%{ \huge \bfseries FLIPPER}\\[0.4cm] % Title of your document
+\includegraphics[width=\linewidth]{FLIPPERDOC_Figures/Logo_FLIPPER.png}\\[0.1cm]
 \HRule \\[1.5cm]
  
 %----------------------------------------------------------------------------------------
@@ -72,12 +73,12 @@ Sebastiaan \textsc{van de Velde} % Your name
 %	LOGO SECTION
 %----------------------------------------------------------------------------------------
 
-%\includegraphics{ECOMOD-CommonSetupGuide_Figures/Logo_RBINS}\\[0.5cm] % Include a department/university logo - this will require the graphicx package
+%\includegraphics[width=\linewidth]{FLIPPERDOC_Figures/Logo_FLIPPER.png}\\[0.1cm] % Include a department/university logo - this will require the graphicx package
 
 %----------------------------------------------------------------------------------------
 %	DATE SECTION
 %----------------------------------------------------------------------------------------
-\vspace{3cm}
+\vspace{2cm}
 {\large \today}\\[3cm] % Date, change the \today to a set date if you want to be precise
 
  
@@ -101,9 +102,7 @@ Under construction
 \section{Required software and packages}
 \label{sect_software}
 
-FLIPPER is essentially a series of functions and scripts written in the R language. Hence, you will need a functioning version of R and Rstudio. 
-
-Required packages:
+FLIPPER is a series of functions and scripts to analyze porewater profiles of dissolved species. It is written in the R language, so you will need a functioning version of R and Rstudio. FLIPPER uses a series of R-packages that are essential for its functioning, so you need makes sure the following packages have installed on R:
 \begin{itemize}
 %\item tcltk (basepackage)
 \item marelac
@@ -115,10 +114,9 @@ Required packages:
 \item wavelets
 \end{itemize}
 
-\section{Package functioning}
+\section{FLIPPER}
 \label{sect_functioning}
-
-The package is called using the following syntax:
+FLIPPER is called as follows:
 \begin{verbatim}
 FLIPPER.func(input,por.cte=NA,E.cte=NULL,tort.dep=1,species,method=NULL,
              env.parms=NULL,full.output=FALSE,
@@ -127,9 +125,63 @@ FLIPPER.func(input,por.cte=NA,E.cte=NULL,tort.dep=1,species,method=NULL,
              gradient.parms=NULL)
 \end{verbatim}
 
-\subsection{Input}
+\subsection{input}
+At the bare minimum, you need to supply it with an input dataframe containing depth and concentrations and a porosity value (either as a constant value, or included in the input dataframe). All other arguments have default values that allow FLIPPER to run.
 
-\subsection{Output}
+
+
+\begin{table*}[!h]
+	\small
+	\caption{Most important FLIPPER parameters. \\ $^{1}$Porosity has to be defined either in the input dataframe or as a constant value. \\ $^{2}$Electrical field vector structure is c("value E","start depth of E","end depth of E"), where "start depth" is shallower than 'end depth". \\ $^{3}$Only relevant if an electrical field is present.}
+	\begin{tabular}{p{2.5cm} p{1.5cm} p{5cm} p{2cm} p{1.5cm} }
+		\hline
+		\textbf{Name} & \textbf{Structure} & \textbf{subname} & \textbf{Units} & \textbf{Required?} \\     
+		 \hline
+		\textbf{input} & dataframe & 'x' = depth & $cm$ & required  \\
+		 &  & 'C' = concentration & $mmol \: m^{-3}$  & required \\
+		 &  & 'por' = porosity & - & optional$^{1}$  \\
+		 &  & 'E' = electrical field & $V \: m^{-1}$ & optional   \\
+		 \textbf{por.cte} & scalar &   & - & optional$^{1}$ \\
+		 \textbf{E.cte} & vector &   & $V \: m^{-1}$ & optional$^{2}$ \\
+		 \textbf{tort.dep} & integer & '1' = 1-2ln(por) (default) & - & optional \\
+		 &  & '2' = por\^-1 & - & optional \\
+		 &  & '3' = por\^-2 & - & optional \\
+		 &  & '4' = 1+3(1-por) & - & optional \\
+		 \textbf{species} & character & e.g. c("O2") for oxygen  & - & required \\
+		 \textbf{method} & character & "gradient" = only diffusive flux  & - & optional \\
+		 & & "discrete" = only discrete analysis & - & optional \\
+		 & & "continuous" = only continuous analysis & - & optional \\
+		 & & "all" = all three methods (default) & - & optional \\
+		 \textbf{full.output} & logical & TRUE gives all possible output & - & optional \\
+		 &  & FALSE gives cleaned output (see section below) & - & optional \\
+		 \textbf{env.parms} & list & 'TC' = temperature & $\deg C$ & optional  \\
+		 & & 'S' = salinity & - & optional  \\
+		 & & 'P' = pressure & bar & optional  \\
+		 & & 'Dmol' = diffusion coefficient & $m^{-2} d^{-1}$ & optional  \\
+		 & & 'z' = charge of ion & - & optional$^{3}$  \\
+		 \textbf{discrete.parms} & list & 'i.end' = maximum number of zones to test & - & optional  \\
+		 & & 'initial.zones' = start zones to start lumping & - & optional  \\
+		 \textbf{continuous.parms} & list & 'p' = order of polynomial to be fitted (typically 2 or 3)) & - & optional  \\
+		 %& & 'bnd.upper' = integer determining filter behaviour at the upstream (upper, left) boundary. Value = 1: no constraint on flux (default value). Value = 2: constant flux imposed. Value = 3: zero flux imposed.    & - & optional  \\
+		 %& & 'bnd.lower' = integer determining filter behaviour at the downstream (lower or right) boundary. Value = 1: no constraint on flux (default value). Value = 2: constant flux imposed. Value = 3: zero flux imposed.  & - & optional  \\
+		 %& & 'n.C' = window size used in filtering the concentration C, representing the number of data points to the left and right of the data midpoint (hence the filter length  = 2*n.C+1)& - & optional  \\
+		 %& &  'n.J' = window size used in filtering the first order derivative dC\_dx, representing the number of data points to the left and right of the data midpoint (hence the filter length  = 2*n.J+1) & - & optional \\
+		 %& & 'n.R' = window size used in filtering the second order derivative d2C\_dx2, representing the number of data points to the left and right of the data midpoint (hence the filter length  = 2*n.R+1) & - & optional \\
+		 & & 'n.uniform' = logical, if TRUE then n.C, n.J, and n.R are all set uniform to max(n.C,n.J,n.R) & - & optional \\
+		 %& & 'min.n'  = minimum value of the window size, used when scanning the optimal window size  & - & optional \\
+		 %& &'max.n'  = maximum value of the window size, used when scanning the optimal window size  & - & optional \\
+		 %& &'optimal.window.size'   = either "automated" or "interactive" (default) interactive allows user to select ideal filter size automated lets function select ideal filter size  & - & optional \\
+		 %& &'keep.grapics'   = either TRUE or FALSE (default) - keeps windows created by automated function & - & optional \\
+		 %& &'full.output' = logical, TRUE gives all output, FALSE gives selected output (without info, see fitprofile\_package) & - & optional \\
+		 %& &'interpolation'= which mode of interpolation of the data is used (if necessary): average (take maximum stepsize) or interpolate (take minimum stepsize) & - & optional \\
+		 \textbf{gradient.parms} & list & 'x.limits' = depth limits of the profile (a vector of 2 -> the upper depth and the lower depth) & - & optional  \\
+		 
+		 \hline
+	\end{tabular}
+	\label{table_FLIPPERparms}
+\end{table*}
+
+\section{Output}
 
 % input: data for inputting: a dataframe containing 
 %                          depth x         [m]

@@ -210,6 +210,12 @@ if (any(is.na(input$C))){
 input <- input[-c(which(is.na(input$C))),]  
 }
 
+# remove values in the watercolumn
+  
+if (any(input$x<0.0)){
+  input <- input[(input$x>=0.0),]  
+}
+  
 # check input of porosity + create por column in input dataframe
 
 if (is.null(input$por)) {

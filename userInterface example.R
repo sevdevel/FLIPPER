@@ -54,12 +54,20 @@ plot.FLIPPER(test)
 
 load("datasets to test/O2_testprofiles.RData")
 
-test <- FLIPPER.func(input=as.data.frame(profile.A[-(1:26),]),species=c("O2"),
+input.profile <- as.data.frame(cbind(profile.A$C*1e3,profile.A$x*1e-2,profile.A$por))
+colnames(input.profile) <- c('C','x','por')
+test <- FLIPPER.func(input=input.profile,species=c("O2"),
              discrete.parms=list(LBC= "no.flux"),
              continuous.parms=list(optimal.window.size="interactive"),
              method="all")
 
-test <- FLIPPER.func(input=as.data.frame(profile.A),species=c("O2"),
+x11(height=20, width=20)
+plot.FLIPPER(test)
+
+input.profile <- as.data.frame(cbind(profile.B$C*1e3,profile.B$x*1e-2,profile.B$por))
+colnames(input.profile) <- c('C','x','por')
+
+test <- FLIPPER.func(input=input.profile,species=c("O2"),
                      discrete.parms=list(LBC= "no.flux"),
                      continuous.parms=list(optimal.window.size="interactive"),
                      method="all")
@@ -68,3 +76,13 @@ x11(height=20, width=60)
 plot.FLIPPER(test)
 
 
+input.profile <- as.data.frame(cbind(profile.C$C*1e3,profile.C$x*1e-2,profile.C$por))
+colnames(input.profile) <- c('C','x','por')
+
+test <- FLIPPER.func(input=input.profile,species=c("O2"),
+                     discrete.parms=list(LBC= "no.flux"),
+                     continuous.parms=list(optimal.window.size="interactive",n.uniform=TRUE),
+                     method="all")
+
+x11(height=20, width=60)
+plot.FLIPPER(test)
