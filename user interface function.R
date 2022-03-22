@@ -11,9 +11,23 @@
 # adapted R#196 -> the porosity extracted from the constant value now gives 1 for x-values lower than 0 (i.e. in the overlying water)
 # adapted R#331 -> made R skip NA values to calculate max and min value
 # adapted R#192 -> added line to remove NA concentration values from the input frame
+# 22/03/2022 SVDV: -> moved sourcing of other functions to top of file (to avoid having to stay in right working dir)
+#                  -> changed default window selection parm for Savitzky-Golay to "interactive"
+#                  -> changed default i.end parameter so that it is at most 2 less than the number of unique 
+#                     depths supplied
 #=========================================================
 
+# =========================================================
+# load required packages
+# =========================================================
 
+require(marelac)
+#require(signal) -> is included in fitprofile package
+#require(fractaldim) -> is included in fitprofile package
+source("fittingfuncs/gradientfit v01.R")
+source("fittingfuncs/SavitskyGolay v01.R")
+source("fittingfuncs/profile v01.R")
+source("fittingfuncs/user_input.R")
 
 # =========================================================
 # auxiliary function to generate default parameter sets
@@ -26,7 +40,7 @@ generate.default.parms <- function(input,species,set){
     bnd.upper <- bnd.lower <- 1
     n.C <- n.J <- n.R      <- NULL
     n.uniform              <- FALSE
-    optimal.window.size    <- "automated" 
+    optimal.window.size    <- "interactive" 
     min.n                  <- p - p%%2
     max.n                  <- nrow(input)%/%2-1
     keep.graphics          <- FALSE
@@ -49,7 +63,7 @@ generate.default.parms <- function(input,species,set){
    irr    <- 0 
    irr.att<- 0.03
    N      <- 200
-   i.end  <- 12
+   i.end  <- min(12,length(unique(input$x[!is.na(input$C)]))-2)
    initial.zones <- NULL
    prob      <- 0.01
    UBC       <- "conc.up"
@@ -222,19 +236,6 @@ if (!is.null(E.cte)){
   input$E <- rep(0,length(input$x))
   input$E[start:end] <- E.cte[1]
 }
-
-# ---------------------
-# load required packages
-# ---------------------
-
-require(marelac)
-#require(signal) -> is included in fitprofile package
-#require(fractaldim) -> is included in fitprofile package
-#source("fitProfile_package v04 SEB.R") -> is split up in different scripts (easier to keep the overview)
-source("fittingfuncs/gradientfit v01.R")
-source("fittingfuncs/SavitskyGolay v01.R")
-source("fittingfuncs/profile v01.R")
-source("fittingfuncs/user_input.R")
 
 # ---------------------
 # Create environmental parameter list (defaults with user supplied values)

@@ -232,7 +232,6 @@ plot.production <- function(depth, conc, modelfit, zones, prod,
   
 }
 
-
 #========================================================
 # Plot output of fit.profile
 #========================================================
@@ -241,8 +240,6 @@ plot.fitprofile <- function(x){
                   zones = x$prod$depth)
   
 }
-
-
 
 integrate.profile <- function(depth,zones,prod){
   
@@ -264,7 +261,6 @@ plot.statistics <- function(depth, conc, modelfit, zones, prod){
   
   
 }
-
 
 #========================================================
 # Main function 
@@ -369,7 +365,7 @@ fit.profile <- function(input,
     Zone.table <- NULL}
   
   print(paste("best initial layers", GUESS.zone))
-  
+
   #===========================================================================================
   # Step 4; lumping ; starts with number of zones as defined in GUESS.zone
   # combines adjecent zones with similar production rates to 1 zone
@@ -493,7 +489,7 @@ fit.profile <- function(input,
   
   
   if (full.output == FALSE){ return(profile.output) } else{
-      profile.output$J.all      <- data.frame(x.int        = parms$grid$x.int,
+      profile.output$J.all      <- data.frame(x.int = parms$grid$x.int,
                                               J.adv = modeloutput$adv.flux,
                                               J.dif = modeloutput$dif.flux,
                                               J.tot = modeloutput$dif.flux + modeloutput$adv.flux)
