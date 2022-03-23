@@ -1,7 +1,13 @@
 \BOOKMARK [1][-]{section.1}{Introduction}{}% 1
 \BOOKMARK [1][-]{section.2}{Required software and packages}{}% 2
 \BOOKMARK [1][-]{section.3}{FLIPPER}{}% 3
-\BOOKMARK [2][-]{subsection.3.1}{input dataframe}{section.3}% 4
-\BOOKMARK [1][-]{section.4}{Output}{}% 5
-\BOOKMARK [1][-]{section.5}{References}{}% 6
-\BOOKMARK [1][-]{section.6}{FAQ and useful svn/linux commands}{}% 7
+\BOOKMARK [2][-]{subsection.3.1}{"input": data input dataframe}{section.3}% 4
+\BOOKMARK [2][-]{subsection.3.2}{single value input parameters}{section.3}% 5
+\BOOKMARK [2][-]{subsection.3.3}{"env.parms": environmental parameters list}{section.3}% 6
+\BOOKMARK [2][-]{subsection.3.4}{"gradient.parms": gradient parameters list}{section.3}% 7
+\BOOKMARK [2][-]{subsection.3.5}{"discrete.parms": discrete parameters list}{section.3}% 8
+\BOOKMARK [2][-]{subsection.3.6}{"continuous.parms": continuous parameters list}{section.3}% 9
+\BOOKMARK [1][-]{section.4}{Output}{}% 10
+\BOOKMARK [1][-]{section.5}{Visualisation}{}% 11
+\BOOKMARK [1][-]{section.6}{References}{}% 12
+\BOOKMARK [1][-]{section.7}{FAQ and useful svn/linux commands}{}% 13

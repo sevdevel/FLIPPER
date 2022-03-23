@@ -1,8 +1,14 @@
 \boolfalse {citerequest}\boolfalse {citetracker}\boolfalse {pagetracker}\boolfalse {backtracker}\relax 
 \contentsline {section}{\numberline {1}Introduction}{1}{section.1}%
-\contentsline {section}{\numberline {2}Required software and packages}{1}{section.2}%
-\contentsline {section}{\numberline {3}FLIPPER}{1}{section.3}%
-\contentsline {subsection}{\numberline {3.1}input dataframe}{1}{subsection.3.1}%
-\contentsline {section}{\numberline {4}Output}{1}{section.4}%
-\contentsline {section}{\numberline {5}References}{1}{section.5}%
-\contentsline {section}{\numberline {6}FAQ and useful svn/linux commands}{3}{section.6}%
+\contentsline {section}{\numberline {2}Required software and packages}{2}{section.2}%
+\contentsline {section}{\numberline {3}FLIPPER}{2}{section.3}%
+\contentsline {subsection}{\numberline {3.1}"input": data input dataframe}{2}{subsection.3.1}%
+\contentsline {subsection}{\numberline {3.2}single value input parameters}{3}{subsection.3.2}%
+\contentsline {subsection}{\numberline {3.3}"env.parms": environmental parameters list}{4}{subsection.3.3}%
+\contentsline {subsection}{\numberline {3.4}"gradient.parms": gradient parameters list}{4}{subsection.3.4}%
+\contentsline {subsection}{\numberline {3.5}"discrete.parms": discrete parameters list}{5}{subsection.3.5}%
+\contentsline {subsection}{\numberline {3.6}"continuous.parms": continuous parameters list}{5}{subsection.3.6}%
+\contentsline {section}{\numberline {4}Output}{5}{section.4}%
+\contentsline {section}{\numberline {5}Visualisation}{7}{section.5}%
+\contentsline {section}{\numberline {6}References}{8}{section.6}%
+\contentsline {section}{\numberline {7}FAQ and useful svn/linux commands}{8}{section.7}%

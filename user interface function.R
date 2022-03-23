@@ -15,6 +15,7 @@
 #                  -> changed default window selection parm for Savitzky-Golay to "interactive"
 #                  -> changed default i.end parameter so that it is at most 2 less than the number of unique 
 #                     depths supplied
+# 23/03/2022 SVDV: made sure the values analyzed with the discrete function are only positive depths (in the sediment)
 #=========================================================
 
 # =========================================================
@@ -58,8 +59,8 @@ generate.default.parms <- function(input,species,set){
   return(gradient.parms.default)
  }
  if(set =="discrete"){
-   L.down <- max(input$x)
-   x.up   <- min(input$x)
+   L.down <- max(input[(input$x>=0.0),"x"]) 
+   x.up   <- min(input[(input$x>=0.0),"x"])
    irr    <- 0 
    irr.att<- 0.03
    N      <- 200
@@ -212,9 +213,9 @@ input <- input[-c(which(is.na(input$C))),]
 
 # remove values in the watercolumn
   
-if (any(input$x<0.0)){
-  input <- input[(input$x>=0.0),]  
-}
+  #if (any(input$x<0.0)){
+  #  input <- input[(input$x>=0.0),]  
+#}
   
 # check input of porosity + create por column in input dataframe
 
