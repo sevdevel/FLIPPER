@@ -219,6 +219,11 @@ input <- input[-c(which(is.na(input$C))),]
   
 # check input of porosity + create por column in input dataframe
 
+if (!is.null(input$por)){
+  if(!is.na(por.cte)){
+  print("Warning: you have supplied porosity in the input dataframe AND as a constant. FLIPPER will only take into account the porosity supplied in the input dataframe")
+}}
+  
 if (is.null(input$por)) {
   if (is.na(por.cte)){
   stop("porosity should be defined as a constant (por.cte) or included in the input dataframe (input$por)")
@@ -237,13 +242,20 @@ if (tort.dep == 4){ input$tort <- 1+3*(1-(input$por))  }
 
 # create E column in input dataframe
 
-if (!is.null(E.cte)){
-  start <- min(which(input$x >= E.cte[2]))
-  end   <- max(which(input$x <= E.cte[3]))
-  input$E <- rep(0,length(input$x))
-  input$E[start:end] <- E.cte[1]
+if (!is.null(input$E)){
+  if(!is.null(E.cte)){
+  print("Warning: you have supplied the electrical field in the input dataframe AND as a constant. FLIPPER will only take into account the electrical field supplied in the input dataframe")
+}}
+  
+if (is.null(input$E)) {
+  if (!is.null(E.cte)){
+    start <- min(which(input$x >= E.cte[2]))
+    end   <- max(which(input$x <= E.cte[3]))
+    input$E <- rep(0,length(input$x))
+    input$E[start:end] <- E.cte[1]
+  }
 }
-
+  
 # ---------------------
 # Create environmental parameter list (defaults with user supplied values)
 # ---------------------
