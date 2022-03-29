@@ -12,12 +12,6 @@
 #                  the script would crash because no zone would be selected (leading to -inf or
 #                  NA values). Now the number of guessed zones becomes automatically 1.
 
-require(tcltk)
-require(ReacTran)
-require(marelac)
-require(FME)
-source("fittingfuncs/user_input.R")
-
 # =============================================================================
 # 1. Basic diagenetic model => calculates C or Prod based on 1 set of C or P
 # =============================================================================
@@ -178,11 +172,12 @@ PROFILE.interactive <- function(maxzone=10, guess=4){
 # Plot production, concentration and fit line
 #========================================================
 
-plot.production <- function(depth, conc, modelfit, zones, prod, 
+plot.production <- function(depth, conc, modelfit, zones, prod, prod.bottom.depth, 
                             conc.limits=NULL, prod.limits=NULL, y.limits=NULL, stat=T, 
                             p.value=NA, R.square=NA){
   
-  zones <- c(zones, max(depth))
+  #zones <- c(zones, max(depth))
+  zones <- c(zones, prod.bottom.depth)
   if(is.null(y.limits))    y.limits <- c(max(depth, na.rm=T)*1.25,min(depth, na.rm = T)*0.75)
   if(is.null(prod.limits)) prod.limits <- c(range(c(prod*1.25,prod*0.75)))
   if(prod.limits[1]>0) prod.limits[1] <- 0
@@ -194,7 +189,7 @@ plot.production <- function(depth, conc, modelfit, zones, prod,
   plot(x=prod, y=zones[1:(length(zones)-1)], type="n", ylim=y.limits, axes=F, ylab="", xlab="",
        xlim = prod.limits)
   rect(xleft=0, ybottom=zones[2:length(zones)], ytop=zones[1:(length(zones)-1)], xright=prod, 
-       col=gray(level=0.95))
+       col=gray(level=0.9))
   
   #abline(v=0)
   
@@ -236,8 +231,8 @@ plot.production <- function(depth, conc, modelfit, zones, prod,
 # Plot output of fit.profile
 #========================================================
 plot.fitprofile <- function(x){
-  plot.production(depth = x$data$x, conc= x$data$C, prod = x$prod$Prod, modelfit = x$modelfit$C,
-                  zones = x$prod$depth)
+  plot.production(depth = x$data$x, conc= x$data$C, prod = x$prod$Prod, prod.bottom.depth = parms$L.down,
+                  modelfit = x$modelfit$C, zones = x$prod$depth)
   
 }
 
@@ -454,7 +449,8 @@ fit.profile <- function(input,
       plot.production(depth    = obs[,1], conc = obs[,2], 
                       modelfit = Conc2.fit[,c("x",paste("zone",i,sep=""))],
                       prod     = Prod2.zone[[i]]$Prod, 
-                      zones    = Prod2.zone[[i]]$depth, 
+                      zones    = Prod2.zone[[i]]$depth,
+                      prod.bottom.depth = parms$L.down,
                       p.value  = Zone.lump[Zone.lump$Zones==(i+1),2],
                       R.square = SSR2$Rsquare[SSR2$zones==i])
       

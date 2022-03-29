@@ -15,11 +15,29 @@ plot.continuous <- function(depth, conc, modelfit, R.int=NULL, y.limits = NULL,
   if(is.null(conc.limits)) conc.limits <- c(range(c(conc*1.25,conc*0.75)))
   if(is.null(flux.limits)) flux.limits <- c(range(c(flux*1.25,flux*0.75)))
   
-  
   par(new=F)
+  
+  interval <- unique(round(diff(model.depth),digits=8))
+  prod.zones         <- prod
+  depth.zones.top    <- model.depth - interval/2.
+  depth.zones.bottom <- model.depth + interval/2.
+  
+  plot(x=prod, y=model.depth, ylim=y.limits, lwd=2, lty=1, 
+       xlab="",ylab="", axes=F, xlim = prod.limits, type="l")
+  rect(xleft=0, ybottom=depth.zones.bottom, ytop=depth.zones.top, xright=prod.zones, 
+       col=gray(level=0.9),border=NA)
+  
+  abline(v=0)
+  
+  axis(3, cex.axis=1.2, lwd=1.5)
+  # abline(h=par()$yaxp[2])
+  mtext(text="Production", side=3, line=2.5, cex=1.5, lwd=1.5)
+  
+  par(new=T)
   
   plot(x=conc, y=depth, ylim=y.limits, pch=21, cex=1, bg=gray(level=0.2), xlab="",ylab="", axes=F,
        xlim = conc.limits)
+  points(x=conc, y=depth, pch=21, cex=1)
   lines(x=modelfit[,2], y=modelfit[,1], lwd=2, lty=1, col="red")
   
   axis(1, cex.axis=1.2, lwd=1.5, pos=par()$yaxp[1])
@@ -31,18 +49,6 @@ plot.continuous <- function(depth, conc, modelfit, R.int=NULL, y.limits = NULL,
   
   abline(h=0, lty=1)  
   
-  par(new=T)
-  
-  plot(x=prod, y=model.depth, ylim=y.limits, lwd=2, lty=2, 
-       xlab="",ylab="", axes=F, xlim = prod.limits, type="l")
-  
-  
-  
-  #abline(v=0)
-  
-  axis(3, cex.axis=1.2, lwd=1.5)
-  # abline(h=par()$yaxp[2])
-  mtext(text="Production", side=3, line=2.5, cex=1.5, lwd=1.5)
   
   if(!is.null(R.int)){
   text(y=max(depth), x=mean(prod.limits), adj=c(0,0),
@@ -54,12 +60,13 @@ plot.continuous <- function(depth, conc, modelfit, R.int=NULL, y.limits = NULL,
 
 
 
-plot.discrete <- function(depth, conc, modelfit, prod, R.int=NULL, 
+plot.discrete <- function(depth, conc, modelfit, prod, R.int=NULL, prod.bottom.depth, 
                             conc.limits=NULL, prod.limits=NULL, y.limits=NULL){
   
   zones <- prod$depth
   prod  <- prod$Prod
-  zones <- c(zones, max(depth))
+  #zones <- c(zones, max(depth))
+  zones <- c(zones, prod.bottom.depth)
   if(is.null(y.limits))    y.limits <- c(max(depth, na.rm=T)*1.25,min(depth, na.rm = T)*0.75)
   if(is.null(prod.limits)) prod.limits <- c(range(c(prod*1.25,prod*0.75)))
   if(prod.limits[1]>0) prod.limits[1] <- 0
@@ -71,7 +78,7 @@ plot.discrete <- function(depth, conc, modelfit, prod, R.int=NULL,
   plot(x=prod, y=zones[1:(length(zones)-1)], type="n", ylim=y.limits, axes=F, ylab="", xlab="",
        xlim = prod.limits)
   rect(xleft=0, ybottom=zones[2:length(zones)], ytop=zones[1:(length(zones)-1)], xright=prod, 
-       col=gray(level=0.95))
+       col=gray(level=0.9))
   
   #abline(v=0)
   
@@ -159,8 +166,9 @@ plot.FLIPPER <- function(result){
     modelfit  <- result$output$fit
     prod      <- result$output$R.vol
     R.int     <- result$output$R.int
+    prod.bottom.depth <- result$parms$discrete.parms$L.down
     
-    plot.discrete(depth,conc,modelfit,prod,R.int)
+    plot.discrete(depth,conc,modelfit,prod,R.int,prod.bottom.depth)
   }
   
   if (result$method=="gradient"){

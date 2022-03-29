@@ -23,6 +23,13 @@
 # =========================================================
 
 require(marelac)
+require(signal)
+require(fractaldim)
+require(tcltk)
+require(ReacTran)
+require(marelac)
+require(FME)
+require(wavelets)
 #require(signal) -> is included in fitprofile package
 #require(fractaldim) -> is included in fitprofile package
 source("fittingfuncs/gradientfit v01.R")
@@ -358,10 +365,10 @@ h.max <- max(intervals)
 h.min <- min(intervals)
 
 if (continuous.parms$interpolation == "interpolate"){
-  new.x <- seq(min(input$x,na.rm=T),max(input$x,na.rm=T),h.min)
+  new.x <- seq(max(0.0,min(input$x,na.rm=T)),max(input$x,na.rm=T),h.min)
   rm(h.max)}
 if (continuous.parms$interpolation == "average"){
-  new.x <- seq(min(input$x,na.rm=T),max(input$x,na.rm=T),h.max)
+  new.x <- seq(max(0.0,min(input$x,na.rm=T)),max(input$x,na.rm=T),h.max)
   rm(h.min)}
 
 input.continuous <- data.frame(
@@ -374,7 +381,7 @@ input.continuous <- data.frame(
   dpor_dx = approx(input$x,input$dpor_dx,new.x,rule=2)$y,
   dv_dx   = approx(input$x,input$dv_dx,new.x,rule=2)$y,
   dDs_dx  = approx(input$x,input$dDs_dx,new.x,rule=2)$y
-)} else {input.continuous <- input}
+)} else {input.continuous <- input[input$x>=0.0,]}
 
 if (continuous.parms$max.n == nrow(input)%/%2-1){
   continuous.parms$max.n <- nrow(input.continuous)%/%2-1

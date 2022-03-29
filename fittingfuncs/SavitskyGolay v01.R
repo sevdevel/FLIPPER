@@ -17,9 +17,6 @@
 #                  Added input check at L309 to make sure minimal window size is
 #                  not too small relative to the polynomial order (min.n >= p-p%%2)
 
-require(signal)
-require(fractaldim)
-
 ##############################################################################
 # Savitzky Golay filter with selection of the optimal filter window based on
 # fractal dimension analysis (public)
