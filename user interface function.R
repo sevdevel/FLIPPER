@@ -47,7 +47,7 @@ generate.default.parms <- function(input,species,set){
     p                      <- 3
     bnd.upper <- bnd.lower <- 1
     n.C <- n.J <- n.R      <- NULL
-    n.uniform              <- FALSE
+    n.uniform              <- TRUE
     optimal.window.size    <- "interactive" 
     min.n                  <- p - p%%2
     max.n                  <- nrow(input)%/%2-1

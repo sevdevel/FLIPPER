@@ -100,14 +100,6 @@ plot.FLIPPER(test)
 # The continuous method
 #===============================================================================
 
-# uniform filter window of 5 (n=2)
-continuous.parms <- list(n.C=2,n.J=2,n.R=2)
-test <- FLIPPER.func(input=input.profile,species=c("O2"),por.cte=por.cte, 
-                     env.parms=env.parms,
-                     continuous.parms=continuous.parms,
-                     method="continuous")
-plot.FLIPPER(test)
-
 # uniform filter window of 21 (n=15)
 continuous.parms <- list(n.C=15,n.J=15,n.R=15)
 test <- FLIPPER.func(input=input.profile,species=c("O2"),por.cte=por.cte, 
@@ -116,103 +108,69 @@ test <- FLIPPER.func(input=input.profile,species=c("O2"),por.cte=por.cte,
                      method="continuous")
 plot.FLIPPER(test)
 
-# uniform filter window of 81 (n=40)
-continuous.parms <- NULL#list(n.C=40,n.J=40,n.R=40)
+# Run FLIPPER continuous and interactive, without uniform filter window
+continuous.parms <- list(optimal.window.size="interactive",n.uniform=FALSE)
 test <- FLIPPER.func(input=input.profile,species=c("O2"),por.cte=por.cte, 
                      env.parms=env.parms,
                      continuous.parms=continuous.parms,
                      method="continuous")
 plot.FLIPPER(test)
 
-# Run FLIPPER continuous and interactive
-continuous.parms <- list()
+# Run FLIPPER continuous and interactive, with uniform filter window
+continuous.parms <- list(optimal.window.size="interactive",n.uniform=TRUE)
 test <- FLIPPER.func(input=input.profile,species=c("O2"),por.cte=por.cte, 
                      env.parms=env.parms,
                      continuous.parms=continuous.parms,
                      method="continuous")
 plot.FLIPPER(test)
 
+#===============================================================================
+# Run all methods
+#===============================================================================
 
-
-
-output.example <- list()
-#output.example$gradient <- test
-#output.example$discrete <- test
-
-
-save(output.example,file="datasets to test/output.example.Rdata")
-
-input.profile <- as.data.frame(cbind(profile.A$C*1e3,profile.A$x*1e-2,profile.A$por))
-colnames(input.profile) <- c('C','x','por')
-input.profile <- as.data.frame(cbind(profile.A$C*1e3,profile.A$x*1e-2,profile.A$por))
-colnames(input.profile) <- c('C','x','por')
-
-test <- FLIPPER.func(input=input.profile,species=c("O2"),
-             discrete.parms=list(LBC= "no.flux"),
-             continuous.parms=list(optimal.window.size="interactive"),
-             method="all")
-
-x11(height=20, width=20)
-plot.FLIPPER(test)
-
-input.profile <- as.data.frame(cbind(profile.B$C*1e3,profile.B$x*1e-2,profile.B$por))
-colnames(input.profile) <- c('C','x','por')
-
-test <- FLIPPER.func(input=input.profile,species=c("O2"),
-                     discrete.parms=list(LBC= "no.flux"),
-                     continuous.parms=list(optimal.window.size="interactive"),
+gradient.parms <- c()
+discrete.parms <- list()
+continuous.parms <- list(optimal.window.size="interactive",n.uniform=TRUE)
+test <- FLIPPER.func(input=input.profile,species=c("O2"),por.cte=por.cte, 
+                     env.parms=env.parms,
+                     gradient.parms=gradient.parms,
+                     discrete.parms=discrete.parms,
+                     continuous.parms=continuous.parms,
                      method="all")
-
-x11(height=20, width=60)
-plot.FLIPPER(test)
-
-
-input.profile <- as.data.frame(cbind(profile.C$C*1e3,profile.C$x*1e-2,profile.C$por))
-colnames(input.profile) <- c('C','x','por')
-
-test <- FLIPPER.func(input=input.profile,species=c("O2"),
-                     discrete.parms=list(LBC= "no.flux"),
-                     continuous.parms=list(optimal.window.size="interactive",n.uniform=TRUE),
-                     method="all")
-
-x11(height=20, width=60)
 plot.FLIPPER(test)
 
 #===============================================================================
-# Test dataset of classical porewater data
+# Test dataset of classical porewater data with an electrical field
 #===============================================================================
 
+# load dataset
 load("datasets to test/test.data.1.Rdata")
 
+# gradient method
 test <- FLIPPER.func(input=as.data.frame(test.data$input),species=test.data$species,E.cte=c(-0.1,0,0.03),
-                     env.parms=test.data$env.parms,discrete.parms=list(LBC="conc.down",C.down=test.data$input$C[nrow(test.data$input)]),
-                     continuous.parms=list(optimal.window.size="interactive"),
-                     method="all")
-
-x11(height=20, width=20)
-plot.FLIPPER(test)
-
-test <- FLIPPER.func(input=as.data.frame(test.data$input),species=test.data$species,E.cte=c(-0.1,0,0.03),
-                     env.parms=test.data$env.parms,discrete.parms=list(LBC="conc.down",C.down=test.data$input$C[nrow(test.data$input)]),
-                     continuous.parms=list(optimal.window.size="interactive"),
+                     env.parms=test.data$env.parms,
                      method="gradient")
 
 x11(height=20, width=20)
 plot.FLIPPER(test)
 
+# discrete method
+discrete.parms <- list(LBC="conc.down",C.down=test.data$input$C[nrow(test.data$input)])
 test <- FLIPPER.func(input=as.data.frame(test.data$input),species=test.data$species,E.cte=c(-0.1,0,0.03),
-                     env.parms=test.data$env.parms,discrete.parms=list(LBC="conc.down",C.down=test.data$input$C[nrow(test.data$input)]),
-                     continuous.parms=list(optimal.window.size="interactive"),
+                     env.parms=test.data$env.parms,
+                     discrete.parms=discrete.parms,
+                     method="discrete")
+
+x11(height=20, width=20)
+plot.FLIPPER(test)
+
+# continuous method
+continuous.parms <- list()
+test <- FLIPPER.func(input=as.data.frame(test.data$input),species=test.data$species,E.cte=c(-0.1,0,0.03),
+                     env.parms=test.data$env.parms,
+                     continuous.parms=continuous.parms,
                      method="continuous")
 
 x11(height=20, width=20)
 plot.FLIPPER(test)
 
-
-test <- FLIPPER.func(input=as.data.frame(test.data$input),species=test.data$species,E.cte=c(-0.1,0,0.03),
-                     env.parms=test.data$env.parms,discrete.parms=list(LBC="conc.down",C.down=test.data$input$C[nrow(test.data$input)]),
-                     continuous.parms=list(optimal.window.size="interactive"),
-                     method="discrete")
-
-x11(height=20, width=20)
-plot.FLIPPER(test)

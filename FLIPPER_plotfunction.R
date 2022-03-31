@@ -51,7 +51,7 @@ plot.continuous <- function(depth, conc, modelfit, R.int=NULL, y.limits = NULL,
   
   
   if(!is.null(R.int)){
-  text(y=max(depth), x=mean(prod.limits), adj=c(0,0),
+  text(y=max(depth), x=mean(conc.limits), adj=c(0,0),
        paste("Continuous method \nR.int =",round(R.int,3)), cex=1.5)}
   
   
@@ -196,11 +196,12 @@ plot.FLIPPER <- function(result){
   
     # plot discrete
     
-    modelfit  <- result$output$discrete$fit
-    prod      <- result$output$discrete$R.vol
-    R.int     <- result$output$discrete$R.int
+    modelfit          <- result$output$discrete$fit
+    prod              <- result$output$discrete$R.vol
+    R.int             <- result$output$discrete$R.int
+    prod.bottom.depth <- result$parms$discrete.parms$L.down
     
-    plot.discrete(depth,conc,modelfit,prod,R.int)
+    plot.discrete(depth,conc,modelfit,prod,R.int,prod.bottom.depth)
     
     # Plot continuous
     modelfit <- result$output$continuous$overview[,c("x","C","J.tot","R.vol")]

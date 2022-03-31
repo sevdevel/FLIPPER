@@ -11,7 +11,7 @@ title: "FLIPPER: Flexible Interpretation of Porewater Profiles and Estimation of
 </center>
 
 ```{r, eval=T, echo=F}
-load("datasets to test/output.example.RData", envir = knitr::knit_global())
+load("datasets to test/output.example.Rdata", envir = knitr::knit_global())
 ```
 
 # Introduction
@@ -417,44 +417,29 @@ which shows that if we can find the first and second derivatives of the concentr
 
 # The continuous method (first and second derivative calculation)
 
-The continuous method will derive the first and second derivative of a given concentration profile, and use that to calculate transport and production. One issue with experimental data is noise. We saw before that a higher number of zones can lead to fluctuations between positive and negative production zones when running the discrete method. One way of dealing with noise is smoothing your data. In the continuous method, we pass a window over the concentration profile, and fit a polynomial through it, and then calculate the first and second derivative of the polynomial at each point. The filter employed is a Savitzky-Golay filter, which is use a lot in analysis of spectra [@Savitzky1964]. The critical point for this analysis is the filter window. If we choose too narrow a filter window (defined by parameter **n**, a window will be created of n points before and after the point of interest, so a total of 2n+1), we will capture too much noise. If we choose too large a window, we will smooth too much. Compare for example the continuous output for a filter window of 5 (**n**=2) and one with a filter window of 31 (**n**=15)
+The continuous method will derive the first and second derivative of a given concentration profile, and use that to calculate transport and production. One issue with experimental data is noise. We saw before that a higher number of zones can lead to fluctuations between positive and negative production zones when running the discrete method. One way of dealing with noise is smoothing your data. In the continuous method, we pass a window over the concentration profile, and fit a polynomial through it, and then calculate the first and second derivative of the polynomial at each point. The filter employed is a Savitzky-Golay filter, which is use a lot in analysis of spectra [@Savitzky1964]. The critical point for this analysis is the filter window. If we choose too narrow a filter window (defined by parameter **n**, a window will be created of n points before and after the point of interest, so a total of 2n+1), we will capture too much noise. If we choose too large a window, we will smooth too much. 
+You can explore the effect of the smoothing window on your output by changing the **n** below. Remember that **n** indicates the number of points left and right of the center point, so the actual window is 2n+1. 
 
-
-```{r, eval=T, echo=T}
-    continuous.parms <- list(n.C=2,n.J=2,n.R=2)
+```{r, eval=T, echo=F}
+sliderInput("n.C", label = "Smoothing window (n):",
+              min = 2, max = 40, value = 2, step = 1)
+renderPlot({
+    continuous.parms <- list(n.C=input$n.C,n.J=input$n.C,n.R=input$n.C)
     test <- FLIPPER.func(input=input.profile,species=c("O2"),por.cte=por.cte, 
                          env.parms=env.parms,
                          continuous.parms=continuous.parms,
                          method="continuous")
     plot.FLIPPER(test)
+})
 ```
 
+You will see that when the filter window is too low, we capture every twist and turn in the profiles and there is a lot of noise in the production profile. On the other hand, if we smooth too much, we are missing important features. For example, the sharp decrease in gradient at 0.4 cm is missed because the smoothing window takes into account too many of the higher concentration points. It is thus important to find the right smoothing window. You will also notice that the production profile predicted by the continuous method in FLIPPER is very similar as for the discrete method, which is what we would like (otherwise the diagenetic theory would be having issues :o)). 
 
-```{r, eval=T, echo=T}
-    continuous.parms <- list(n.C=15,n.J=15,n.R=15)
-    test <- FLIPPER.func(input=input.profile,species=c("O2"),por.cte=por.cte, 
-                         env.parms=env.parms,
-                         continuous.parms=continuous.parms,
-                         method="continuous")
-    plot.FLIPPER(test)
-```
-
-You can see that in the first case, we capture every twist and turn in the concentration profile, while in the second case, the profile is much smoother. We can now see what happens if we smooth a lot
-
-```{r, eval=T, echo=T}
-    continuous.parms <- list(n.C=40,n.J=40,n.R=40)
-    test <- FLIPPER.func(input=input.profile,species=c("O2"),por.cte=por.cte, 
-                         env.parms=env.parms,
-                         continuous.parms=continuous.parms,
-                         method="continuous")
-    plot.FLIPPER(test)
-```
-
-which shows that oversmoothing means that the sharp decrease in gradient at 0.4 cm is missed because the smoothing window takes into account too many of the higher concentration points.
-It is thus important to find the right smoothing window. When you run FLIPPER interactive (the default mode), you will be show three different pop-up windows where you will have to click on the 'break-point', this is where the curve stops decreasing and levels off (preferably at a value of 1). This break-point should be the optimal filter window. In our case, the first breakpoint (for the concentration profile) is around 3 or 4. The second breakpoint (for $\frac{\delta C}{\delta x}$, or the flux $J$) is around 6, and the third breakpoint (for $\frac{\delta^2 C}{\delta x^2}$, or the production $R$) is around 15. The need to smooth more with higher order derivatives is simply a consequence of the increasing noise level (the uncertainty becomes progressively larger).
+When you run FLIPPER interactive (the default mode), you will be show three different pop-up windows where you will have to click on the 'break-point', this is where the curve stops decreasing and levels off (preferably at a value of 1). This break-point should be the optimal filter window. You will notice that (in general) the optimal filter window becomes higher for the higher order derivatives - so for C it is around 3 or 4, for the flux $J$ (the first derivative $\frac{\delta C}{\delta x}$) it is around 6, and for the production profile $R$ (the second derivative $\frac{\delta^2 C}{\delta x^2}$), it is around 15. The need to smooth more with higher order derivatives is simply a consequence of the increasing noise level (the uncertainty becomes progressively larger). When you select these points, you will notice that this way of selecting the breakpoints is not water-tight; there are still a lot of noise squiggles in the concentration profile.
+Another question that is not straight-forward to answer is whether you need to use the same filter window for $C$, $\frac{\delta C}{\delta x}$ and $\frac{\delta^2 C}{\delta x^2}$. You could argue that you should, since you want to calculate the derivatives of the same concentration profile, and if you change smoothing windows, the plotted model fit will not link to the plotted transport and production rates. On the other hand, higher order derivative introduce more noise, so it makes sense you have to increase the smoothing window for these derivatives, and you don't want to oversmooth the lower order derivatives. While it is important to be aware of these issues, choose different smoothing windows for $J$ and $R$ will not significantly affect your results. By default, FLIPPER sets the filter window uniformally, so all **n** values are set to the highest selected **n** (which will generally be the one selected for $R$). FLIPPER can also automatically select a filter size, but this function is a bit sensitive and has the tendency to crash (so this needs a bit more development). For now, we will not discuss the other options for the continuous method, as the default settings are the best ones to use.
 
 ```{r, eval=F, echo=T}
-  continuous.parms <- list()
+  continuous.parms <- list(optimal.window.size="interactive",n.uniform=FALSE)
   test <- FLIPPER.func(input=input.profile,species=c("O2"),por.cte=por.cte, 
                        env.parms=env.parms,
                        continuous.parms=continuous.parms,
@@ -465,7 +450,7 @@ It is thus important to find the right smoothing window. When you run FLIPPER in
 actionButton("action12", label = "Run continuous FLIPPER")
 renderPlot({
   if(input$action12>=1){
-    continuous.parms <- list()
+    continuous.parms <- list(optimal.window.size="interactive",n.uniform=FALSE)
     test <- FLIPPER.func(input=input.profile,species=c("O2"),por.cte=por.cte, 
                          env.parms=env.parms,
                          continuous.parms=continuous.parms,
@@ -475,10 +460,37 @@ renderPlot({
 }) 
 ```
 
-If you have selected the points mentioned above, you will see that the production profile predicted by the continuous method in FLIPPER is very similar as for the discrete method, which is what we would like (otherwise the diagenetic theory would be having issues :o)). 
-As a final point we will look at the output of the continuous method
+As a final point we will look at the output of the continuous method, 
 
-TODO
+```{r, eval=T, echo=F}
+actionButton("action13", label = "Show FLIPPER output")
+renderPrint({
+  if(input$action13>=1){
+    print(output.example$continuous)
+    } 
+}) 
+```
+
+We still have the method and input values (the method now obviously shows “continuous”). The input section now also contains a **continuous.input** dataframe, which contains the input as it is processed for the continuous approach. The smoothing procedure needs equally spaced data, so FLIPPER interpolates the supplied data. There are also columns for the first derivatives of the porosity, diffusion coefficient and advection velocity. These are zero by default, but can also be supplied in the user-input dataframe (columns **dpor_dx**, **dDs_dx** and **dv_dx**). The output dataframe looks very similar as when you have run the discrete method, but it now contains continuous profiles for the diffusive flux J.dif, the advective flus J.adv and the volumetric production rate. And then finally there are the parameter lists.
+
+Should you want to run all three methods at the same time, you can set the **method** to "all" or NULL. FLIPPER will then run through all three methods, and supply you with a combination of the output of the individual methods. You can then easily plot all three methods next to each other using the *plot.FLIPPER* function, which allows for a comparison of the different methods.
+
+```{r, eval=F, echo=T}
+gradient.parms <- c()
+discrete.parms <- list()
+continuous.parms <- list(optimal.window.size="interactive",n.uniform=TRUE)
+test <- FLIPPER.func(input=input.profile,species=c("O2"),por.cte=por.cte, 
+                     env.parms=env.parms,
+                     gradient.parms=gradient.parms,
+                     discrete.parms=discrete.parms,
+                     continuous.parms=continuous.parms,
+                     method="all")
+plot.FLIPPER(test)
+```
+
+```{r, eval=T, echo=F, fig.dim = c(18,8)}
+plot.FLIPPER(output.example$all)
+```
 
 # Specific cases
 
