@@ -440,10 +440,15 @@ fit.profile <- function(input,
     
     Significant.zones <- Zone.lump$Zones[Zone.lump$p.value < 0.01]
     
-    final.zones       <- max(Significant.zones)
+    if(length(Significant.zones)==0){
+      final.zones <- 1
+    } else{
+      final.zones <- max(Significant.zones)
+    }
     
     x11(height = 20,width=40)
     par(mfrow=c(2,4))
+    
     for(i in max(c(1,(final.zones-3))): min(c((final.zones+3),GUESS.zone))){
       
       plot.production(depth    = obs[,1], conc = obs[,2], 

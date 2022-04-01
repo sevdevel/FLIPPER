@@ -209,11 +209,16 @@ if (method != "gradient" & method != "discrete" & method != "continuous" & metho
 }
 
 if (!is.null(discrete.parms$i.end)){
-  if (discrete.parms$i.end > (length(unique(input$x[!is.na(input$C)])-2))){
-    stop(paste("error: supplied i.end has to be smaller than", (length(unique(input$x[!is.na(input$C)])-2)),"(= number of non-NA C values - 2)"))
+  if (discrete.parms$i.end > (length(unique(input$x[!is.na(input$C)]))-2)){
+    stop(paste("error: supplied i.end has to be smaller than", (length(unique(input$x[!is.na(input$C)]))-2),"(= number of non-NA C values - 2)"))
   }
 }
-         
+
+if (!is.null(discrete.parms$initial.zones)){
+  if (discrete.parms$initial.zones > (length(unique(input$x[!is.na(input$C)]))-2)){
+    stop(paste("error: supplied initial.zones has to be smaller than", (length(unique(input$x[!is.na(input$C)]))-2),"(= number of non-NA C values - 2)"))
+  }
+}         
 # ---------------------
 # prepare input dataframe for general use
 # ---------------------
