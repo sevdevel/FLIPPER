@@ -89,8 +89,8 @@ generate.default.parms <- function(input,species,set){
    S    <- 30    # salinity [PSU]
    P    <- 1.013 # pressure [bar]
    z    <- 0     # charge of the ion at hand []
-   #Dmol <- diffcoeff(S=S,t=TC,P=P,species=species)[[species]]*1E4*3600*24 # [cm2 d-1]
-   env.parms.default <- list(TC = TC, S = S, P = P, z = z)#, Dmol = Dmol)
+   Dmol <- NULL #diffcoeff(S=S,t=TC,P=P,species=species)[[species]]*1E4*3600*24 # [cm2 d-1]
+   env.parms.default <- list(TC = TC, S = S, P = P, z = z, Dmol = Dmol)
    
   return(env.parms.default) 
  }
@@ -208,6 +208,12 @@ if (method != "gradient" & method != "discrete" & method != "continuous" & metho
   stop("error: method should be one of the following possibilities: \n \"gradient\", \"discrete\", \"continuous\", \"all\"")
 }
 
+if (!is.null(discrete.parms$i.end)){
+  if (discrete.parms$i.end > (length(unique(input$x[!is.na(input$C)])-2))){
+    stop(paste("error: supplied i.end has to be smaller than", (length(unique(input$x[!is.na(input$C)])-2)),"(= number of non-NA C values - 2)"))
+  }
+}
+         
 # ---------------------
 # prepare input dataframe for general use
 # ---------------------
