@@ -79,7 +79,7 @@ por.cte <- 0.8
 Now we have the essential data to analyze our porewater $O_2$ profile. Let's start using FLIPPER.
 
 # The gradient method
-We supply our **input** dataframe, **por.cte** value and **env.parms** list to FLIPPER, and indicate we are analyzing an oxygen profile (c("O2") in the FLIPPER function). The *plot.FLIPPER(test)* call will plot the result of the analysis. 
+We supply our **input** dataframe, **por.cte** value and **env.parms** list to FLIPPER, and indicate we are analyzing an oxygen profile (c("O2") in the FLIPPER function). **tort.dep** indicates the preferred correction of the diffusion coefficient for sediment tortuosity, we will discuss this in depth later, for now we just keep the default value (1).  The *plot.FLIPPER(test)* call will plot the result of the analysis. 
 ```{r, eval=F, echo=T}
     test <- FLIPPER.func(input=input.profile,species=c("O2"),por.cte=por.cte,tort.dep=1, 
                          env.parms=env.parms,
@@ -90,7 +90,7 @@ Once we run FLIPPER via the action button below, a pop-up window will appear and
 Whenever you are ready, press the button below to run FLIPPER.
 
 ```{r, eval=F, echo=T}
-    test <- FLIPPER.func(input=input.profile,species=c("O2"),por.cte=por.cte, 
+    test <- FLIPPER.func(input=input.profile,species=c("O2"),por.cte=por.cte,tort.dep=1, 
                          env.parms=env.parms,
                          method="gradient")
     plot.FLIPPER(test)
@@ -99,7 +99,7 @@ Whenever you are ready, press the button below to run FLIPPER.
 actionButton("action", label = "Run gradient FLIPPER")
 renderPlot({
   if(input$action>=1){
-    test <- FLIPPER.func(input=input.profile,species=c("O2"),por.cte=por.cte, 
+    test <- FLIPPER.func(input=input.profile,species=c("O2"),por.cte=por.cte,tort.dep=1,  
                          env.parms=env.parms,
                          method="gradient")
     plot.FLIPPER(test)
@@ -127,7 +127,7 @@ An alternative way of calculating an oxygen flux into the sediment is by calcula
 For now, all you need to know is that the flux of O2 through the DBL should be equal to the flux of O2 into the sediment. We can test this by running FLIPPER again, and this time select the first point just above the SWI, and the 6th point above the SWI (where the constant concentration of O2 starts decreasing).
 
 ```{r, eval=F, echo=T}
-    test <- FLIPPER.func(input=input.profile,species=c("O2"),por.cte=por.cte, 
+    test <- FLIPPER.func(input=input.profile,species=c("O2"),por.cte=por.cte,tort.dep=1,  
                          env.parms=env.parms,
                          method="gradient")
     plot.FLIPPER(test)
@@ -136,7 +136,7 @@ For now, all you need to know is that the flux of O2 through the DBL should be e
 actionButton("action2", label = "Run gradient FLIPPER")
 renderPlot({
   if(input$action2>=1){
-    test <- FLIPPER.func(input=input.profile,species=c("O2"),por.cte=por.cte, 
+    test <- FLIPPER.func(input=input.profile,species=c("O2"),por.cte=por.cte,tort.dep=1,  
                          env.parms=env.parms,
                          method="gradient")
     plot.FLIPPER(test)
@@ -148,7 +148,7 @@ If all went well, FLIPPER calculated for us a diffusive oxygen flux of 7.536 $mm
 Let's run FLIPPER again, and this time we will select a point just below the sediment-water interface, and one near the bottom of the concentration profile (just for illustrative purposes)
 
 ```{r, eval=F, echo=T}
-    test <- FLIPPER.func(input=input.profile,species=c("O2"),por.cte=por.cte, 
+    test <- FLIPPER.func(input=input.profile,species=c("O2"),por.cte=por.cte,tort.dep=1,  
                          env.parms=env.parms,
                          method="gradient")
     plot.FLIPPER(test)
@@ -157,7 +157,7 @@ Let's run FLIPPER again, and this time we will select a point just below the sed
 actionButton("action3", label = "Run gradient FLIPPER")
 renderPlot({
   if(input$action3>=1){
-    test <- FLIPPER.func(input=input.profile,species=c("O2"),por.cte=por.cte, 
+    test <- FLIPPER.func(input=input.profile,species=c("O2"),por.cte=por.cte,tort.dep=1,  
                          env.parms=env.parms,
                          method="gradient")
     plot.FLIPPER(test)
@@ -184,7 +184,7 @@ You will see that the output generated contains the selected method and the orig
 
 Now let's go back to our oxygen profile. Using FLIPPER we calculated an oxygen flux of ~8 $mmol \: m^{-2} \: d^{-1}$. What if we now calculate the oxygen flux deeper down in the sediment, for example around 0.3 cm (I will let you choose which points to take)
 ```{r, eval=F, echo=T}
-    test <- FLIPPER.func(input=input.profile,species=c("O2"),por.cte=por.cte, 
+    test <- FLIPPER.func(input=input.profile,species=c("O2"),por.cte=por.cte,tort.dep=1,  
                          env.parms=env.parms,
                          method="gradient")
     plot.FLIPPER(test)
@@ -193,7 +193,7 @@ Now let's go back to our oxygen profile. Using FLIPPER we calculated an oxygen f
 actionButton("action5", label = "Run gradient FLIPPER")
 renderPlot({
   if(input$action5>=1){
-    test <- FLIPPER.func(input=input.profile,species=c("O2"),por.cte=por.cte, 
+    test <- FLIPPER.func(input=input.profile,species=c("O2"),por.cte=por.cte,tort.dep=1,  
                          env.parms=env.parms,
                          method="gradient")
     plot.FLIPPER(test)
@@ -259,7 +259,7 @@ A pop-up window will appear, for now just supply the value FLIPPER proposes.
 
 ```{r, eval=F, echo=T}
   discrete.parms <- list()
-  test <- FLIPPER.func(input=input.profile,species=c("O2"),por.cte=por.cte, 
+  test <- FLIPPER.func(input=input.profile,species=c("O2"),por.cte=por.cte,tort.dep=1,  
                          env.parms=env.parms,
                          discrete.parms=discrete.parms,
                          method="discrete")
@@ -269,7 +269,8 @@ A pop-up window will appear, for now just supply the value FLIPPER proposes.
 actionButton("action6", label = "Run discrete FLIPPER")
 renderPlot({
   if(input$action6>=1){
-    test <- FLIPPER.func(input=input.profile,species=c("O2"),por.cte=por.cte, 
+    discrete.parms <- list()
+    test <- FLIPPER.func(input=input.profile,species=c("O2"),por.cte=por.cte,tort.dep=1, 
                          env.parms=env.parms,
                          discrete.parms=discrete.parms,
                          method="discrete")
@@ -298,11 +299,11 @@ print(output.example$discrete$output$R.vol)
 ```
 the first production zone (-2816.59...) runs from depth 0.0 m (the sediment-water interface) to 0.000995 m. The last zone (zone 6) runs from 0.004975 m to the end of the domain. If you want, you can compare these values to the plot above. Note that volumetric production is diven in $mmol \: m^{-3} \: d^{-1}$, since it is the derivative of flux to depth (see above).
 
-By default, FLIPPER sets the boundary condition (**UBC**) to fixed concentration ("conc.up"), and the lower boundary condition (**UBC**) to a no gradient conditions ("no.flux"). You can also set **UBC** to "flux.up", and define a fixed flux in **flux.up**. The **LBC** can be changed to fixed concentration ("conc.down") or fixed flux ("flux.down"), define the flux in **flux.down**. Let's say we are convinced that the is a flux of oxygen going out of the sediment, and that it is 8.0 $mmol \: m^{-2} \: d^{-1}$. We can fill that in in our discrete parameter list (the negative sign indicates an upward flux)
+By default, FLIPPER sets the upper boundary condition (**UBC**) to fixed concentration ("conc.up"), and the lower boundary condition (**LBC**) to a no gradient conditions ("no.flux"). You can also set **UBC** to "flux.up", and define a fixed flux in **flux.up**. The **LBC** can be changed to fixed concentration ("conc.down") or fixed flux ("flux.down"), define the flux in **flux.down**. Let's say we are convinced that there is a flux of oxygen going out of the sediment, and that it is 8.0 $mmol \: m^{-2} \: d^{-1}$. We can fill that in in our discrete parameter list (the negative sign indicates an upward flux)
 
 ```{r, eval=F, echo=T}
   discrete.parms <- list(UBC="flux.up",LBC="conc.down",flux.up=-8.0)
-  test <- FLIPPER.func(input=input.profile,species=c("O2"),por.cte=por.cte, 
+  test <- FLIPPER.func(input=input.profile,species=c("O2"),por.cte=por.cte,tort.dep=1,  
                        env.parms=env.parms,
                        discrete.parms=discrete.parms,
                        method="discrete")
@@ -315,7 +316,7 @@ actionButton("action8", label = "Run discrete FLIPPER")
 renderPlot({
   if(input$action8>=1){
     discrete.parms <- list(UBC="flux.up",LBC="conc.down",flux.up=-8.0)
-    test <- FLIPPER.func(input=input.profile,species=c("O2"),por.cte=por.cte, 
+    test <- FLIPPER.func(input=input.profile,species=c("O2"),por.cte=por.cte,tort.dep=1,  
                          env.parms=env.parms,
                          discrete.parms=discrete.parms,
                          method="discrete")
@@ -327,7 +328,7 @@ You will see that FLIPPER tried really hard to fit the profile with an upward fl
 Other parameters that could be changed are **L.down** and **x.up**, which define the top and bottom of the profile that should be analyzed by FLIPPER, for example - say we only want to analyze the data down to 0.3 cm depth (Note that changing the **x.up** parameter is a bit more sensitive and might lead to FLIPPER crashing);
 ```{r, eval=F, echo=T}
   discrete.parms <- list(L.down=0.003)
-  test <- FLIPPER.func(input=input.profile,species=c("O2"),por.cte=por.cte, 
+  test <- FLIPPER.func(input=input.profile,species=c("O2"),por.cte=por.cte,tort.dep=1,  
                        env.parms=env.parms,
                        discrete.parms=discrete.parms,
                        method="discrete")
@@ -338,7 +339,7 @@ actionButton("action9", label = "Run discrete FLIPPER")
 renderPlot({
   if(input$action9>=1){
     discrete.parms <- list(L.down=0.003)
-    test <- FLIPPER.func(input=input.profile,species=c("O2"),por.cte=por.cte, 
+    test <- FLIPPER.func(input=input.profile,species=c("O2"),por.cte=por.cte,tort.dep=1,  
                          env.parms=env.parms,
                          discrete.parms=discrete.parms,
                          method="discrete")
@@ -349,7 +350,7 @@ renderPlot({
 what happens now is that we get many more zones. The reason for this is that FLIPPER will fit 12 zones on the 0.0 - 0.3 cm depth interval instead of the 0.0 - 1.0 cm depth interval. Because there are more zones, FLIPPER will be fitting much shorter segments of the concentration profile, which might lead to more noise in your production profile (as you can see - for example - from the production zone at depth). You are able to manipulate the number of zones FLIPPER uses via the **i.end** and **initial.zones** parameters. **i.end** tells FLIPPER the maximum number of zones he needs to test initially, whereas **initial.zones** tells FLIPPER to immediately start the lumping process from a given number of zones. For example;
 ```{r, eval=F, echo=T}
   discrete.parms <- list(i.end=3)
-  test <- FLIPPER.func(input=input.profile,species=c("O2"),por.cte=por.cte, 
+  test <- FLIPPER.func(input=input.profile,species=c("O2"),por.cte=por.cte,tort.dep=1,  
                        env.parms=env.parms,
                        discrete.parms=discrete.parms,
                        method="discrete")
@@ -360,7 +361,7 @@ actionButton("action10", label = "Run discrete FLIPPER")
 renderPlot({
   if(input$action10>=1){
     discrete.parms <- list(i.end=3)
-    test <- FLIPPER.func(input=input.profile,species=c("O2"),por.cte=por.cte, 
+    test <- FLIPPER.func(input=input.profile,species=c("O2"),por.cte=por.cte,tort.dep=1,  
                          env.parms=env.parms,
                          discrete.parms=discrete.parms,
                          method="discrete")
@@ -371,7 +372,7 @@ renderPlot({
 and
 ```{r, eval=F, echo=T}
   discrete.parms <- list(initial.zones=5)
-  test <- FLIPPER.func(input=input.profile,species=c("O2"),por.cte=por.cte, 
+  test <- FLIPPER.func(input=input.profile,species=c("O2"),por.cte=por.cte,tort.dep=1,  
                        env.parms=env.parms,
                        discrete.parms=discrete.parms,
                        method="discrete")
@@ -382,7 +383,7 @@ actionButton("action11", label = "Run discrete FLIPPER")
 renderPlot({
   if(input$action11>=1){
     discrete.parms <- list(initial.zones=5)
-    test <- FLIPPER.func(input=input.profile,species=c("O2"),por.cte=por.cte, 
+    test <- FLIPPER.func(input=input.profile,species=c("O2"),por.cte=por.cte,tort.dep=1,  
                          env.parms=env.parms,
                          discrete.parms=discrete.parms,
                          method="discrete")
@@ -425,7 +426,7 @@ sliderInput("n.C", label = "Smoothing window (n):",
               min = 2, max = 40, value = 2, step = 1)
 renderPlot({
     continuous.parms <- list(n.C=input$n.C,n.J=input$n.C,n.R=input$n.C)
-    test <- FLIPPER.func(input=input.profile,species=c("O2"),por.cte=por.cte, 
+    test <- FLIPPER.func(input=input.profile,species=c("O2"),por.cte=por.cte,tort.dep=1,  
                          env.parms=env.parms,
                          continuous.parms=continuous.parms,
                          method="continuous")
@@ -440,7 +441,7 @@ Another question that is not straight-forward to answer is whether you need to u
 
 ```{r, eval=F, echo=T}
   continuous.parms <- list(optimal.window.size="interactive",n.uniform=FALSE)
-  test <- FLIPPER.func(input=input.profile,species=c("O2"),por.cte=por.cte, 
+  test <- FLIPPER.func(input=input.profile,species=c("O2"),por.cte=por.cte,tort.dep=1,  
                        env.parms=env.parms,
                        continuous.parms=continuous.parms,
                        method="continuous")
@@ -451,7 +452,7 @@ actionButton("action12", label = "Run continuous FLIPPER")
 renderPlot({
   if(input$action12>=1){
     continuous.parms <- list(optimal.window.size="interactive",n.uniform=FALSE)
-    test <- FLIPPER.func(input=input.profile,species=c("O2"),por.cte=por.cte, 
+    test <- FLIPPER.func(input=input.profile,species=c("O2"),por.cte=por.cte,tort.dep=1,  
                          env.parms=env.parms,
                          continuous.parms=continuous.parms,
                          method="continuous")
@@ -471,7 +472,7 @@ renderPrint({
 }) 
 ```
 
-We still have the method and input values (the method now obviously shows “continuous”). The input section now also contains a **continuous.input** dataframe, which contains the input as it is processed for the continuous approach. The smoothing procedure needs equally spaced data, so FLIPPER interpolates the supplied data. There are also columns for the first derivatives of the porosity, diffusion coefficient and advection velocity. These are zero by default, but can also be supplied in the user-input dataframe (columns **dpor_dx**, **dDs_dx** and **dv_dx**). The output dataframe looks very similar as when you have run the discrete method, but it now contains continuous profiles for the diffusive flux J.dif, the advective flus J.adv and the volumetric production rate. And then finally there are the parameter lists.
+We still have the method and input values (the method now obviously shows "continuous"). The input section now also contains a **continuous.input** dataframe, which contains the input as it is processed for the continuous approach. The smoothing procedure needs equally spaced data, so FLIPPER interpolates the supplied data. There are also columns for the first derivatives of the porosity, diffusion coefficient and advection velocity. These are zero by default, but can also be supplied in the user-input dataframe (columns **dpor_dx**, **dDs_dx** and **dv_dx**). The output dataframe looks very similar as when you have run the discrete method, but it now contains continuous profiles for the diffusive flux J.dif, the advective flus J.adv and the volumetric production rate. And then finally there are the parameter lists.
 
 Should you want to run all three methods at the same time, you can set the **method** to "all" or NULL. FLIPPER will then run through all three methods, and supply you with a combination of the output of the individual methods. You can then easily plot all three methods next to each other using the *plot.FLIPPER* function, which allows for a comparison of the different methods.
 
@@ -479,7 +480,7 @@ Should you want to run all three methods at the same time, you can set the **met
 gradient.parms <- c()
 discrete.parms <- list()
 continuous.parms <- list(optimal.window.size="interactive",n.uniform=TRUE)
-test <- FLIPPER.func(input=input.profile,species=c("O2"),por.cte=por.cte, 
+test <- FLIPPER.func(input=input.profile,species=c("O2"),por.cte=por.cte,tort.dep=1,  
                      env.parms=env.parms,
                      gradient.parms=gradient.parms,
                      discrete.parms=discrete.parms,
