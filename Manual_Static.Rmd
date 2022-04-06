@@ -1,7 +1,5 @@
 ---
-runtime: shiny
-output: html_document
-#output: pdf_document
+output: pdf_document
 bibliography: "DOC/FLIPPERDOC.bib"
 title: "FLIPPER: Flexible Interpretation of Porewater Profiles and Estimation of Rates"
 ---
@@ -28,7 +26,11 @@ All three of these methods are combined in a simple R-function *FLIPPER_func*. I
 ## Preparing your R environment
 
 The first step is tosource the two main functions
-```{r}
+```{r, eval=F, echo=T}
+source("user interface function.R")
+source("FLIPPER_plotfunction.R")
+```
+```{r, eval=T, echo=F}
 source("user interface function.R", local = knitr::knit_global())
 source("FLIPPER_plotfunction.R", local = knitr::knit_global())
 ```
@@ -49,7 +51,10 @@ We can see that FLIPPER requires **input** (your data) and **species** (which el
 
 ## Preparing a dataset
 Now we want to load a dataset to work with 
-```{r}
+```{r, eval=F, echo=T}
+load("datasets to test/O2_testprofiles.RData")
+```
+```{r, eval=T, echo=F}
 load("datasets to test/O2_testprofiles.RData", envir = knitr::knit_global())
 ```
 
@@ -87,28 +92,20 @@ We supply our **input** dataframe, **por.cte** value and **env.parms** list to F
     plot.FLIPPER(test)
 ```
 Once we run FLIPPER via the action button below, a pop-up window will appear and ask us to select the two points between which we want to calculate the diffusive flux. To calculate a gradient, we need to fit a linear model through the concentration versus depth plot. The slope of this fit then gives us the concentration gradient. To have a robust estimate of the slope, it is important to select at least 3 points (and preferably more) points. Let's first select the first four points on the concentration profile (so the four points closest to the sediment-water interface).
-Whenever you are ready, press the button below to run FLIPPER.
-
 ```{r, eval=F, echo=T}
     test <- FLIPPER.func(input=input.profile,species=c("O2"),por.cte=por.cte,tort.dep=1, 
                          env.parms=env.parms,
                          method="gradient")
     plot.FLIPPER(test)
 ```
-```{r, eval=T, echo=F}
-actionButton("action", label = "Run gradient FLIPPER")
-renderPlot({
-  if(input$action>=1){
-    test <- FLIPPER.func(input=input.profile,species=c("O2"),por.cte=por.cte,tort.dep=1,  
-                         env.parms=env.parms,
-                         method="gradient")
-    plot.FLIPPER(test)
-  } 
-
-}) 
+```{r, echo=FALSE, out.width="50%", fig.cap="Selected points on gradient FLIPPER"}
+knitr::include_graphics("DOC/FLIPPERDOC_Figures/FLIPPER_gradient1.png")
+```
+```{r, echo=FALSE, out.width="50%", fig.cap="gradient FLIPPER output"}
+knitr::include_graphics("DOC/FLIPPERDOC_Figures/FLIPPER_gradient2.png")
 ```
 
-If all went well, FLIPPER calculated for us a diffusive oxygen flux of 8.012 $mmol \: m^{-2} \: d^{-1}$ (*R.int* on the plot, the minus indicates consumption; see below for a bit more discussion about the relation between *R.int* and fluxes). The red line indicates the linear fit through the selected points. The gradient method in FLIPPER calculates the diffusive flux following Fick's first law of diffusion [@Fick1855]; 
+FLIPPER calculated for us a diffusive oxygen flux of 8.012 $mmol \: m^{-2} \: d^{-1}$ (*R.int* on the plot, the minus indicates consumption; see below for a bit more discussion about the relation between *R.int* and fluxes). The red line indicates the linear fit through the selected points. The gradient method in FLIPPER calculates the diffusive flux following Fick's first law of diffusion [@Fick1855]; 
 
 $$
 J_{D}= -\phi D_S \frac{\delta C}{\delta x} 
@@ -132,16 +129,11 @@ For now, all you need to know is that the flux of O2 through the DBL should be e
                          method="gradient")
     plot.FLIPPER(test)
 ```
-```{r, eval=T, echo=F}
-actionButton("action2", label = "Run gradient FLIPPER")
-renderPlot({
-  if(input$action2>=1){
-    test <- FLIPPER.func(input=input.profile,species=c("O2"),por.cte=por.cte,tort.dep=1,  
-                         env.parms=env.parms,
-                         method="gradient")
-    plot.FLIPPER(test)
-  } 
-}) 
+```{r, echo=FALSE, out.width="50%", fig.cap="Selected points on gradient FLIPPER"}
+knitr::include_graphics("DOC/FLIPPERDOC_Figures/FLIPPER_gradient3.png")
+```
+```{r, echo=FALSE, out.width="50%", fig.cap="gradient FLIPPER output"}
+knitr::include_graphics("DOC/FLIPPERDOC_Figures/FLIPPER_gradient4.png")
 ```
 
 If all went well, FLIPPER calculated for us a diffusive oxygen flux of 7.536 $mmol \: m^{-2} \: d^{-1}$, which, given the uncertainty associated with the measurements, is pretty close to the oxygen flux estimated from the first sediment layer.
@@ -153,31 +145,16 @@ Let's run FLIPPER again, and this time we will select a point just below the sed
                          method="gradient")
     plot.FLIPPER(test)
 ```
-```{r, eval=T, echo=F}
-actionButton("action3", label = "Run gradient FLIPPER")
-renderPlot({
-  if(input$action3>=1){
-    test <- FLIPPER.func(input=input.profile,species=c("O2"),por.cte=por.cte,tort.dep=1,  
-                         env.parms=env.parms,
-                         method="gradient")
-    plot.FLIPPER(test)
-    } 
-}) 
+```{r, echo=FALSE, out.width="50%", fig.cap="gradient FLIPPER output"}
+knitr::include_graphics("DOC/FLIPPERDOC_Figures/FLIPPER_gradient5.png")
 ```
+
 You will notice that the red line this time does not go through the points. This is because FLIPPER is trying to fit a linear model through all the points between the two selected by the user. You will thus have to be careful if your profile contains outliers (e.g. that can be generated by a spike in power), as FLIPPER will use the points provided by you.
 
 Let's now have a quick look at the output provided by FLIPPER, when it is run for the gradient method alone. 
 
-```{r, eval=F, echo=T}
+```{r, eval=T, echo=T}
   print(output.example$gradient)
-```
-```{r, eval=T, echo=F}
-actionButton("action4", label = "Show FLIPPER output")
-renderPrint({
-  if(input$action4>=1){
-    print(output.example$gradient)
-    } 
-}) 
 ```
 
 You will see that the output generated contains the selected method and the original input provided by the user. But two columns have been added to the profile; **por**($\phi$) and **tort** ($\theta^2$). These two columns are calculated automatically from the porosity values provided (either as constant or within the **input** dataframe) - as described above. The output also contains a seperate **output** list, which provides you with the diffusive flux where you selected the points (**J.dif.up**), the advective flux at the same location (**J.adv.up**), the integrated reaction rate (**R.int**), and some information related to the linear fit (which is generated by the *lm* function in R). Finally, FLIPPER also returns the environmental parameters (**env.parms**) and specific gradient parameters (**gradient.parms**). In case you did not provide any specific input, these lists will contain the default parameters. The diffusion coefficient (if not provided explicitely) will be calculated using the *diffcoeff* function of CRAN:marelac. 
@@ -189,17 +166,10 @@ Now let's go back to our oxygen profile. Using FLIPPER we calculated an oxygen f
                          method="gradient")
     plot.FLIPPER(test)
 ```
-```{r, eval=T, echo=F}
-actionButton("action5", label = "Run gradient FLIPPER")
-renderPlot({
-  if(input$action5>=1){
-    test <- FLIPPER.func(input=input.profile,species=c("O2"),por.cte=por.cte,tort.dep=1,  
-                         env.parms=env.parms,
-                         method="gradient")
-    plot.FLIPPER(test)
-    } 
-}) 
+```{r, echo=FALSE, out.width="50%", fig.cap="gradient FLIPPER output"}
+knitr::include_graphics("DOC/FLIPPERDOC_Figures/FLIPPER_gradient6.png")
 ```
+
 The oxygen flux is now much lower (likely around 2 $mmol \: m^{-2} \: d^{-1}$). If 8 $mmol \: m^{-2} \: d^{-1}$ comes in at the top of the sediment, and only 2 $mmol \: m^{-2} \: d^{-1}$ leaves the sediment at 0.3 cm depth, we have 'lost' ~6 $mmol \: m^{-2} \: d^{-1}$ in those 3 cm. This 'loss' is what has been consumed by microorganisms (and macro/meio organisms, should they be present in your sediment core), we can thus say that the integrated oxygen consumption in the first 0.3 cm of the sediment is ~6 $mmol \: m^{-2} \: d^{-1}$. Should you calculate the oxygen flux at the bottom of your profile (where the O2 concentration is constant and zero), you would get a flux of 0 $mmol \: m^{-2} \: d^{-1}$ (you can try if you don't believe me, simply press 'Run FLIPPER' again above). That means that in the whole sediment column, the total integrated oxygen consumption rate (**R.int**) is (assuming advective transport can be neglected, which it can in unbioturbated sediments)
 $$
 R_{int}= J_{dif}^{bottom} - J_{dif}^{top} 
@@ -265,30 +235,19 @@ A pop-up window will appear, for now just supply the value FLIPPER proposes.
                          method="discrete")
   plot.FLIPPER(test)
 ```
-```{r, eval=T, echo=F}
-actionButton("action6", label = "Run discrete FLIPPER")
-renderPlot({
-  if(input$action6>=1){
-    discrete.parms <- list()
-    test <- FLIPPER.func(input=input.profile,species=c("O2"),por.cte=por.cte,tort.dep=1, 
-                         env.parms=env.parms,
-                         discrete.parms=discrete.parms,
-                         method="discrete")
-    plot.FLIPPER(test)
-    } 
-}) 
+```{r, echo=FALSE, out.width="100%", fig.cap="discrete FLIPPER popup"}
+knitr::include_graphics("DOC/FLIPPERDOC_Figures/FLIPPER_discrete1.png")
 ```
+```{r, echo=FALSE, out.width="50%", fig.cap="discrete FLIPPER output"}
+knitr::include_graphics("DOC/FLIPPERDOC_Figures/FLIPPER_discrete2.png")
+```
+
 This immediately illustrates how the discrete method functions, as you can see the discrete production zones (negative production indicates consumption). The red line again shows the model fit to the data. If all went well, you should see FLIPPER now calculated an integrated production rate of -8.669 $mmol \: m^{-2} \: d^{-1}$, which is slightly higher than the gradient approach predicted, but very similar. 
 
 Let's now have a quick look at the output provided by FLIPPER, when it is run for the discrete method alone. 
 
 ```{r, eval=T, echo=F}
-actionButton("action7", label = "Show FLIPPER output")
-renderPrint({
-  if(input$action7>=1){
-    print(output.example$discrete)
-    } 
-}) 
+print(output.example$discrete)
 ```
 we still have the **method** and **input** values (the method now obviously shows "discrete"). In the **parms** section we now have **discrete.parms** instead of **gradient.parms**. Aside from the possible input values shown above, FLIPPER also return the depth grid (**grid**), porosity grid (**por.grid**), irrigation grid (**irr.grid**), effective diffusion coefficient grid (**Ds**) and advective velocity grid (**v**). These have been generated using the *setup.grid.1D* function from CRAN:ReacTran, and are just provided for information. 
 The **output** list now gives us again the diffusive and advective fluxes at the top of the domain (**J.dif.up**,**J.adv.up**), the fluxes at the bottom of the domain (**J.dif.down**,**J.adv.down**), the volumetric production rate (**R.vol**), the integrated production rate (**R.int**) and the model fit (**fit**). 
@@ -299,7 +258,7 @@ print(output.example$discrete$output$R.vol)
 ```
 the first production zone (-2816.59...) runs from depth 0.0 m (the sediment-water interface) to 0.000995 m. The last zone (zone 6) runs from 0.004975 m to the end of the domain. If you want, you can compare these values to the plot above. Note that volumetric production is diven in $mmol \: m^{-3} \: d^{-1}$, since it is the derivative of flux to depth (see above).
 
-By default, FLIPPER sets the upper boundary condition (**UBC**) to fixed concentration ("conc.up"), and the lower boundary condition (**LBC**) to a no gradient conditions ("no.flux"). You can also set **UBC** to "flux.up", and define a fixed flux in **flux.up**. The **LBC** can be changed to fixed concentration ("conc.down") or fixed flux ("flux.down"), define the flux in **flux.down**. Let's say we are convinced that there is a flux of oxygen going out of the sediment, and that it is 8.0 $mmol \: m^{-2} \: d^{-1}$. We can fill that in in our discrete parameter list (the negative sign indicates an upward flux)
+By default, FLIPPER sets the upper boundary condition (**UBC**) to fixed concentration ("conc.up"), and the lower boundary condition (**LBC**) to a no gradient conditions ("no.flux"). You can also set **UBC** to "flux.up", and define a fixed flux in **flux.up**. The **LBC** can be changed to fixed concentration ("conc.down") or fixed flux ("flux.down"), define the flux in **flux.down**. Let's say we are convinced that there is a flux of oxygen going out of the sediment, and that it is 8.0 $mmol \: m^{-2} \: d^{-1}$. We can fill that in in our discrete parameter list (the negative sign indicates an upward flux) and run FLIPPER again
 
 ```{r, eval=F, echo=T}
   discrete.parms <- list(UBC="flux.up",LBC="conc.down",flux.up=-8.0)
@@ -309,20 +268,9 @@ By default, FLIPPER sets the upper boundary condition (**UBC**) to fixed concent
                        method="discrete")
   plot.FLIPPER(test)
 ```
-and then we run FLIPPER
 
-```{r, eval=T, echo=F}
-actionButton("action8", label = "Run discrete FLIPPER")
-renderPlot({
-  if(input$action8>=1){
-    discrete.parms <- list(UBC="flux.up",LBC="conc.down",flux.up=-8.0)
-    test <- FLIPPER.func(input=input.profile,species=c("O2"),por.cte=por.cte,tort.dep=1,  
-                         env.parms=env.parms,
-                         discrete.parms=discrete.parms,
-                         method="discrete")
-    plot.FLIPPER(test)
-    } 
-}) 
+```{r, echo=FALSE, out.width="50%", fig.cap="discrete FLIPPER output"}
+knitr::include_graphics("DOC/FLIPPERDOC_Figures/FLIPPER_discrete3.png")
 ```
 You will see that FLIPPER tried really hard to fit the profile with an upward flux out of the sediment. While this example does not make much sense, it could help to change the boundary conditions if FLIPPER is not able to find a good fit to your concentration profile with the given boundary conditions. Sometimes you can have a profile with a clear gradient at the bottom of the domain, in that case it makes sens to change **LBC** to "C.down". 
 Other parameters that could be changed are **L.down** and **x.up**, which define the top and bottom of the profile that should be analyzed by FLIPPER, for example - say we only want to analyze the data down to 0.3 cm depth (Note that changing the **x.up** parameter is a bit more sensitive and might lead to FLIPPER crashing);
@@ -334,18 +282,8 @@ Other parameters that could be changed are **L.down** and **x.up**, which define
                        method="discrete")
   plot.FLIPPER(test)
 ```
-```{r, eval=T, echo=F}
-actionButton("action9", label = "Run discrete FLIPPER")
-renderPlot({
-  if(input$action9>=1){
-    discrete.parms <- list(L.down=0.003)
-    test <- FLIPPER.func(input=input.profile,species=c("O2"),por.cte=por.cte,tort.dep=1,  
-                         env.parms=env.parms,
-                         discrete.parms=discrete.parms,
-                         method="discrete")
-    plot.FLIPPER(test)
-    } 
-}) 
+```{r, echo=FALSE, out.width="50%", fig.cap="discrete FLIPPER output"}
+knitr::include_graphics("DOC/FLIPPERDOC_Figures/FLIPPER_discrete4.png")
 ```
 what happens now is that we get many more zones. The reason for this is that FLIPPER will fit 12 zones on the 0.0 - 0.3 cm depth interval instead of the 0.0 - 1.0 cm depth interval. Because there are more zones, FLIPPER will be fitting much shorter segments of the concentration profile, which might lead to more noise in your production profile (as you can see - for example - from the production zone at depth). You are able to manipulate the number of zones FLIPPER uses via the **i.end** and **initial.zones** parameters. **i.end** tells FLIPPER the maximum number of zones he needs to test initially, whereas **initial.zones** tells FLIPPER to immediately start the lumping process from a given number of zones. For example;
 ```{r, eval=F, echo=T}
@@ -356,18 +294,8 @@ what happens now is that we get many more zones. The reason for this is that FLI
                        method="discrete")
   plot.FLIPPER(test)
 ```
-```{r, eval=T, echo=F}
-actionButton("action10", label = "Run discrete FLIPPER")
-renderPlot({
-  if(input$action10>=1){
-    discrete.parms <- list(i.end=3)
-    test <- FLIPPER.func(input=input.profile,species=c("O2"),por.cte=por.cte,tort.dep=1,  
-                         env.parms=env.parms,
-                         discrete.parms=discrete.parms,
-                         method="discrete")
-    plot.FLIPPER(test)
-    } 
-}) 
+```{r, echo=FALSE, out.width="50%", fig.cap="discrete FLIPPER output"}
+knitr::include_graphics("DOC/FLIPPERDOC_Figures/FLIPPER_discrete5.png")
 ```
 and
 ```{r, eval=F, echo=T}
@@ -378,18 +306,8 @@ and
                        method="discrete")
   plot.FLIPPER(test)
 ```
-```{r, eval=T, echo=F}
-actionButton("action11", label = "Run discrete FLIPPER")
-renderPlot({
-  if(input$action11>=1){
-    discrete.parms <- list(initial.zones=5)
-    test <- FLIPPER.func(input=input.profile,species=c("O2"),por.cte=por.cte,tort.dep=1,  
-                         env.parms=env.parms,
-                         discrete.parms=discrete.parms,
-                         method="discrete")
-    plot.FLIPPER(test)
-    } 
-}) 
+```{r, echo=FALSE, out.width="50%", fig.cap="discrete FLIPPER output"}
+knitr::include_graphics("DOC/FLIPPERDOC_Figures/FLIPPER_discrete6.png")
 ```
 The parameters related to irrigation **irr** and **irr.att** will be discussed below. The parameters **prob** tells the confidence interval at which to reject the null hypothesis. While we do not recommend to change this value, increasing it will generally lead to a higher numbe of zones. Parameter **N** is the number of depth layers the diagenetic model should take into account, and should not be changed.
 
@@ -419,21 +337,32 @@ which shows that if we can find the first and second derivatives of the concentr
 # The continuous method (first and second derivative calculation)
 
 The continuous method will derive the first and second derivative of a given concentration profile, and use that to calculate transport and production. One issue with experimental data is noise. We saw before that a higher number of zones can lead to fluctuations between positive and negative production zones when running the discrete method. One way of dealing with noise is smoothing your data. In the continuous method, we pass a window over the concentration profile, and fit a polynomial through it, and then calculate the first and second derivative of the polynomial at each point. The filter employed is a Savitzky-Golay filter, which is use a lot in analysis of spectra [@Savitzky1964]. The critical point for this analysis is the filter window. If we choose too narrow a filter window (defined by parameter **n**, a window will be created of n points before and after the point of interest, so a total of 2n+1), we will capture too much noise. If we choose too large a window, we will smooth too much. 
-You can explore the effect of the smoothing window on your output by changing the **n** below. Remember that **n** indicates the number of points left and right of the center point, so the actual window is 2n+1. 
+You can see the effect of the smoothing window on your output by changing the **n** below. Remember that **n** indicates the number of points left and right of the center point, so the actual window is 2n+1. 
 
-```{r, eval=T, echo=F}
-sliderInput("n.C", label = "Smoothing window (n):",
-              min = 2, max = 40, value = 2, step = 1)
-renderPlot({
-    continuous.parms <- list(n.C=input$n.C,n.J=input$n.C,n.R=input$n.C)
-    test <- FLIPPER.func(input=input.profile,species=c("O2"),por.cte=por.cte,tort.dep=1,  
-                         env.parms=env.parms,
-                         continuous.parms=continuous.parms,
-                         method="continuous")
-    plot.FLIPPER(test)
-})
+```{r, eval=T, echo=T}
+continuous.parms <- list(n.C=2,n.J=2,n.R=2)
+test <- FLIPPER.func(input=input.profile,species=c("O2"),por.cte=por.cte,tort.dep=1,  
+                     env.parms=env.parms,
+                     continuous.parms=continuous.parms,
+                     method="continuous")
+plot.FLIPPER(test)
 ```
-
+```{r, eval=T, echo=T}
+continuous.parms <- list(n.C=15,n.J=15,n.R=15)
+test <- FLIPPER.func(input=input.profile,species=c("O2"),por.cte=por.cte,tort.dep=1,  
+                     env.parms=env.parms,
+                     continuous.parms=continuous.parms,
+                     method="continuous")
+plot.FLIPPER(test)
+```
+```{r, eval=T, echo=T}
+continuous.parms <- list(n.C=40,n.J=40,n.R=40)
+test <- FLIPPER.func(input=input.profile,species=c("O2"),por.cte=por.cte,tort.dep=1,  
+                     env.parms=env.parms,
+                     continuous.parms=continuous.parms,
+                     method="continuous")
+plot.FLIPPER(test)
+```
 You will see that when the filter window is too low, we capture every twist and turn in the profiles and there is a lot of noise in the production profile. On the other hand, if we smooth too much, we are missing important features. For example, the sharp decrease in gradient at 0.4 cm is missed because the smoothing window takes into account too many of the higher concentration points. It is thus important to find the right smoothing window. You will also notice that the production profile predicted by the continuous method in FLIPPER is very similar as for the discrete method, which is what we would like (otherwise the diagenetic theory would be having issues :o)). 
 
 When you run FLIPPER interactive (the default mode), you will be show three different pop-up windows where you will have to click on the 'break-point', this is where the curve stops decreasing and levels off (preferably at a value of 1). This break-point should be the optimal filter window. You will notice that (in general) the optimal filter window becomes higher for the higher order derivatives - so for C it is around 3 or 4, for the flux $J$ (the first derivative $\frac{\delta C}{\delta x}$) it is around 6, and for the production profile $R$ (the second derivative $\frac{\delta^2 C}{\delta x^2}$), it is around 15. The need to smooth more with higher order derivatives is simply a consequence of the increasing noise level (the uncertainty becomes progressively larger). When you select these points, you will notice that this way of selecting the breakpoints is not water-tight; there are still a lot of noise squiggles in the concentration profile.
@@ -447,29 +376,15 @@ Another question that is not straight-forward to answer is whether you need to u
                        method="continuous")
   plot.FLIPPER(test)
 ```
-```{r, eval=T, echo=F}
-actionButton("action12", label = "Run continuous FLIPPER")
-renderPlot({
-  if(input$action12>=1){
-    continuous.parms <- list(optimal.window.size="interactive",n.uniform=FALSE)
-    test <- FLIPPER.func(input=input.profile,species=c("O2"),por.cte=por.cte,tort.dep=1,  
-                         env.parms=env.parms,
-                         continuous.parms=continuous.parms,
-                         method="continuous")
-    plot.FLIPPER(test)
-    } 
-}) 
+
+```{r, echo=FALSE, out.width="50%", fig.cap="continuous FLIPPER output"}
+knitr::include_graphics("DOC/FLIPPERDOC_Figures/FLIPPER_continuous1.png")
 ```
 
 As a final point we will look at the output of the continuous method, 
 
-```{r, eval=T, echo=F}
-actionButton("action13", label = "Show FLIPPER output")
-renderPrint({
-  if(input$action13>=1){
-    print(output.example$continuous)
-    } 
-}) 
+```{r, eval=T, echo=T}
+print(output.example$continuous)
 ```
 
 We still have the method and input values (the method now obviously shows "continuous"). The input section now also contains a **continuous.input** dataframe, which contains the input as it is processed for the continuous approach. The smoothing procedure needs equally spaced data, so FLIPPER interpolates the supplied data. There are also columns for the first derivatives of the porosity, diffusion coefficient and advection velocity. These are zero by default, but can also be supplied in the user-input dataframe (columns **dpor_dx**, **dDs_dx** and **dv_dx**). The output dataframe looks very similar as when you have run the discrete method, but it now contains continuous profiles for the diffusive flux J.dif, the advective flus J.adv and the volumetric production rate. And then finally there are the parameter lists.
