@@ -216,3 +216,11 @@ test <- FLIPPER.func(input=as.data.frame(test.data$input),species=test.data$spec
 
 x11(height=20, width=20)
 plot.FLIPPER(test)
+
+test <- FLIPPER.func(input=as.data.frame(test.data$input),species=test.data$species,E.cte=c(-0.1,0,0.03),
+                     env.parms=test.data$env.parms,discrete.parms=list(LBC="conc.down",C.down=test.data$input$C[nrow(test.data$input)],irr=0.2,irr.int=0.03),
+                     continuous.parms=list(optimal.window.size="interactive"),
+                     method="discrete",full.output=T)
+
+x11(height=20, width=20)
+plot.FLIPPER(test)
