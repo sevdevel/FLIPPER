@@ -12,6 +12,8 @@
 #                  the script would crash because no zone would be selected (leading to -inf or
 #                  NA values). Now the number of guessed zones becomes automatically 1.
 
+# 22/02/2023 SVDV: Added irrigation into the Basic.model function at L21, als provided as output on L487 & 503
+
 # =============================================================================
 # 1. Basic diagenetic model => calculates C or Prod based on 1 set of C or P
 # =============================================================================
@@ -56,10 +58,13 @@ Basic.model  <- function (t=0, C, parms, Prod) {
     
     tran <- tran.summ$dC # M L-3 T-1 POREWATer
     
+    irr <- irr.grid$mid*(C.up - C)
+    
     # Return differential equation and other
     
-    return(list(dCdt       = tran + Prod/por.grid$mid, # M L-3 T-1 POREWATER
-                production = Prod,                     # M L-3 T-1 SEDIMENT
+    return(list(dCdt       = tran + Prod/por.grid$mid + irr, # M L-3 T-1 POREWATER
+                production = Prod,                           # M L-3 T-1 SEDIMENT
+                irrigation = irr,                            # M L-3 T-1 POREWATER
                 dif.flux   = tran.summ$dif.flux,
                 flux.up    = tran.summ$flux.up,
                 flux.down  = tran.summ$flux.down,
@@ -479,7 +484,8 @@ fit.profile <- function(input,
   profile.output$J.adv.up   <- modeloutput$adv.flux[1]
   profile.output$J.dif.down <- modeloutput$dif.flux[length(modeloutput$dif.flux)]
   profile.output$J.adv.down <- modeloutput$adv.flux[length(modeloutput$dif.flux)]
-
+  profile.output$irr.int    <- sum(parms$por.grid$mid*modeloutput$irrigation*parms$grid$dx)
+  
   profile.output$R.vol      <- Prod2.zone[[final.zones]]
   
   profile.output$R.int      <- integrate.profile(zones = c(profile.output$R.vol[,"depth"], max(obs[,1])),
@@ -494,6 +500,7 @@ fit.profile <- function(input,
                                               J.adv = modeloutput$adv.flux,
                                               J.dif = modeloutput$dif.flux,
                                               J.tot = modeloutput$dif.flux + modeloutput$adv.flux)
+      profile.output$irr      <- modeloutput$irrigatio
       profile.output$SSR      <- SSR2[SSR2$zones==final.zones,"ssr"]
       profile.output$R.square <- SSR2[SSR2$zones==final.zones,"Rsquare"]
       profile.output$Zone.Table <- Zone.table
